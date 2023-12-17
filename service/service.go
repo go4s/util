@@ -34,3 +34,6 @@ func Start(ctx context.Context, executor future.Executor) (err error) {
     }
     return
 }
+func (fn StarterFn) Start(ctx context.Context, executor future.Executor) error {
+    return fn(ctx, executor)
+}
