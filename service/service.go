@@ -3,14 +3,15 @@ package service
 import (
     "context"
     "sync"
-    
-    "github.com/go4s/util/future"
 )
 
 type (
-    StarterFn func(context.Context, future.Executor) error
+    Executor interface {
+        Go(func() error)
+    }
+    StarterFn func(context.Context, Executor) error
     Starter   interface {
-        Start(context.Context, future.Executor) error
+        Start(context.Context, Executor) error
     }
 )
 
@@ -26,7 +27,7 @@ func init() {
 func initialize() { services = []Starter{} }
 
 func Register(svc Starter) { services = append(services, svc) }
-func Start(ctx context.Context, executor future.Executor) (err error) {
+func Start(ctx context.Context, executor Executor) (err error) {
     for _, svc := range services {
         if err = svc.Start(ctx, executor); err != nil {
             return
@@ -34,6 +35,6 @@ func Start(ctx context.Context, executor future.Executor) (err error) {
     }
     return
 }
-func (fn StarterFn) Start(ctx context.Context, executor future.Executor) error {
+func (fn StarterFn) Start(ctx context.Context, executor Executor) error {
     return fn(ctx, executor)
 }
