@@ -18,7 +18,7 @@ func New[T any](initialize Initializer[T], once *sync.Once) *Factory[T] {
 }
 func (fact *Factory[T]) Register(inst T) (err error) {
     if fact.Instance = inst; fact.onRegister != nil {
-        fact.once.Do(func() { err = fact.onRegister(&inst) })
+        fact.once.Do(func() { err = fact.onRegister(&fact.Instance) })
     }
     return
 }
